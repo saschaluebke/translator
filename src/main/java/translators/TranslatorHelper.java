@@ -67,8 +67,15 @@ public class TranslatorHelper {
     public List<Language> getAllLanguages(){
         List<Language> responseList = new ArrayList<>();
         if (transltr!=null){
-            transltr.getLanguages();
+            responseList = transltr.getLanguages();
         }
+        return responseList;
+    }
+
+    public List<String> getTranslationModes(){
+        List<String> responseList = new ArrayList<>();
+        responseList.add("Transltr");
+        responseList.add("Database");
         return responseList;
     }
 }
