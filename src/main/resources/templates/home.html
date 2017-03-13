@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Translator</title>
+
+    <script language="javascript" type="text/javascript" src="translated.js"></script>
+
+</head>
+
+<body>
+<!-- list of languages Geht noch nicht!-->
+<form name="forgotpassord" action="translated" method="POST" >
+<select class="form-control" name="from"  th:field="*{language}">
+    <option th:each="language : ${languages}" th:value="${language.name}" th:text="${language.fullName}"></option>
+</select>
+<select class="form-control" name="to">
+    <option th:each="language : ${languages}" th:value="${language.name}" th:text="${language.fullName}"></option>
+</select>
+
+
+        <label>From:</label> <input type='text' name='from' th:value="${from}"/>
+        <label>To:</label> <input type='text' name='to' th:value="${to}"/>
+        <label>Word:</label> <input type='text' name='word' />
+        <label>&nbsp;</label> <input type="submit" value="OK" class="btn"/>
+        <h4>Translation:</h4>
+        <h1  th:text = "${word.name}"></h1>
+    </form>
+</body>
+</html>
