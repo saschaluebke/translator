@@ -4,32 +4,40 @@
     <meta charset="UTF-8"/>
     <title>Translator</title>
 
-    <script language="javascript" type="text/javascript" src="translated.js"></script>
-
 </head>
 
 <body>
-<!-- list of languages Geht noch nicht!-->
 <form name="forgotpassord" action="translated" method="POST" >
-    <select class="translation-control" name="translation" >
-        <option th:each="translate : ${translationList}" th:value="${translate}" th:text="${translate}"></option>
-    </select>
-    <select class="form-control" name="from" >
-        <option th:each="language : ${languageFrom}" th:value="${language.name}" th:text="${language.fullName}"></option>
-    </select>
-    <select class="to-control" name="to">
-        <option th:each="language : ${languageTo}" th:value="${language.name}" th:text="${language.fullName}"></option>
-    </select>
+    <div id="inputDiv">
+        <h3>Put new Word in List </h3><h6>Result</h6>
+        <select class="form-control" name="from" >
+            <option th:each="language : ${languageFrom}" th:value="${language.name}" th:text="${language.fullName}"></option>
+        </select>
+        <label>Word:</label> <input type='text' name='wordPut' value=""/>
+        <label>Description:</label> <input type='text' name='descPut' value=""/>
+        <input type="submit" value="Put Word" class="btn" name="request"/>
+    </div>
+    <div id="translationDiv">
+        <h3>Translate a Word</h3>
+        <select class="translation-control" name="translation" >
+            <option th:each="translate : ${translationList}" th:value="${translate}" th:text="${translate}"></option>
+        </select>
+        <select class="form-control" name="from" >
+            <option th:each="language : ${languageFrom}" th:value="${language.name}" th:text="${language.fullName}"></option>
+        </select>
+        <select class="to-control" name="to">
+            <option th:each="language : ${languageTo}" th:value="${language.name}" th:text="${language.fullName}"></option>
+        </select>
 
-
-       <!-- <label>From:</label> <input type='text' name='from' th:value="${from}"/>
-        <label>To:</label> <input type='text' name='to' th:value="${to}"/>-->
         <label>Word:</label> <input type='text' name='word' th:value="${initialWord}"/>
         <label>&nbsp;</label> <input type="submit" value="OK" class="btn" name="request"/>
-        <h4>Translation:</h4>
+    </div>
+    <div id = "resultDiv">
+        <h4>Translation Result</h4>
         <h1  th:text = "${word.name}"></h1>
         <h1 th:text = "${word.description}"></h1>
         <input type='submit' class="btn" name='request' value="cache result"/>
+    </div>
     </form>
 </body>
 </html>

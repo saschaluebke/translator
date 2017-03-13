@@ -63,28 +63,40 @@ public class WordController {
 
         translator.setFrom(from);
         translator.setTo(to);
-        String[] translations = translator.translate(word);
-        String translation = translator.retokenizer(translations);
 
-        Word w = new Word(0,translation,to);
         modelMap.addAttribute("initialWord",word);
-        modelMap.addAttribute("word",w);
+
         modelMap.addAttribute("to",to);
         modelMap.addAttribute("from",from);
-        System.out.println("Request: "+request);
+
         System.out.println("Translate: "+translate);
-        if (translate.equals("transltr")){
+
+        Word initialWord = new Word(0,word,from);
+        Word translatedWord;
+        DBHelper dbh = new DBHelper("jdbc:mysql://localhost/translation?useSSL=false","org.gjt.mm.mysql.Driver","root","dsa619");
+
+        if (translate.equals("Transltr")){
             System.out.println("Use transltr");
+            String[] translations = translator.translate(word);
+            String translation = translator.retokenizer(translations);
+            translatedWord = new Word(0,translation,to);
+            //TODO: Was soll passieren wenns schon in der Datenbank ist? und Beschreibung gleich....
+            if (request.equals("cache result")){
+                System.out.println("begin caching");
+                initialWord.setId(dbh.putWordList(initialWord));
+                translatedWord.setId(dbh.putWordList(translatedWord));
+                dbh.putRelation(initialWord,translatedWord);
+            }
+        }else{
+            //TODO aus Datenbank holen bis jetzt nehme immer erste gefundene Übersetzung und Homonym...
+            int initialWordId = dbh.getWordList(word,from).get(0).getId();
+            initialWord.setId(initialWordId);
+            ArrayList<Integer> idList = dbh.getRelation(initialWord,from,to);
+            System.out.println(idList+"/"+initialWord.getId()+"/"+from+":"+to);
+            translatedWord = dbh.getWordList(idList.get(0),to);
         }
-        if (request.equals("cache result")){
-            System.out.println("begin caching");
-            DBHelper dbh = new DBHelper("jdbc:mysql://localhost/translation?useSSL=false","org.gjt.mm.mysql.Driver","root","dsa619");
-            Word initialWord = new Word(0,word,from);
-            Word translatedWord = new Word(0,w.getName(),to);
-            dbh.putWordList(initialWord);
-            dbh.putWordList(translatedWord);
-            dbh.putRelation(initialWord,translatedWord);
-        }
+
+        modelMap.addAttribute("word",translatedWord);
         return "home";
     }
 

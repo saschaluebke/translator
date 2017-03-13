@@ -22,7 +22,7 @@ public class DBHelper extends DBQuery{
 
     }
 
-    public Word searchWordList(int id, String language){
+    public Word getWordList(int id, String language){
 
         ResultSet rs =null;
         String name = "";

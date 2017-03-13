@@ -99,9 +99,15 @@ public class Transltr {
 	public List<Language> getLanguages(){
 		Language de = new Language("de","German");
 		Language en = new Language("en","English");
+		Language it = new Language("it", "Italian");
+		Language fin = new Language("fi",	"finnish");
+		Language es = new Language("es","spanish");
 		List<Language> languages = new ArrayList<>();
 		languages.add(de);
 		languages.add(en);
+		languages.add(it);
+		languages.add(fin);
+		languages.add(es);
 				/* All languages {"ar","bs","bg","ca","zh-CHS","zh-CHT","hr","cs","da","nl","en","et","fi","fr","de","el",
 				"ht","he","hi","mww","hu","id","it","ja","sw","ko","lv","lt","no","fa","pl","pt","ro","ru","sr-Latn",
 				"sl","es","sv","tr","uk" };
