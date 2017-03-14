@@ -62,7 +62,9 @@ public class DBHelperTest {
 
         Word wordGerman1 = new Word(0,"Bank","Sitzgelegenheit","de");
         Word wordGerman2 = new Word(0,"Bank","Kreditinstitut","de");
-
+        wordGerman2.setDescription("Das ist eine Beschreibung");
+        wordGerman2.setCount(10);
+        wordGerman2.setPrior(10);
         dbh.putWordList(wordGerman1);
         dbh.putWordList(wordGerman2);
         assertEquals("Bank",dbh.getWordList("Bank","de").get(0).getName());

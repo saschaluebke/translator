@@ -53,6 +53,9 @@ public class DBHelper extends DBQuery{
                 int id = rs.getInt("id");
                 name = rs.getString("name");
                 Word flotsam = new Word(id, name, language);
+                flotsam.setDescription(rs.getString("description"));
+                flotsam.setPrior(rs.getInt("prior"));
+                flotsam.setCount(rs.getInt("count"));
                 wordList.add(flotsam);
             }
         } catch (SQLException e) {
@@ -65,8 +68,8 @@ public class DBHelper extends DBQuery{
         int id = 0;
         ResultSet rs = null;
         try {
-            String[] par1 ={word.getName(),word.getDescription()};
-            queryUpdate("INSERT INTO wordlist_"+word.getLanguage()+" VALUES (0, ?, ?)",par1);
+            String[] par1 ={word.getName(),word.getDescription(),Integer.toString(word.getPrior()),Integer.toString(word.getCount())};
+            queryUpdate("INSERT INTO wordlist_"+word.getLanguage()+" VALUES (0, ?, ?, ?, ?)",par1);
             String[] par2 ={word.getName()};
             rs = query("SELECT * FROM wordlist_"+word.getLanguage()+" WHERE name = ? ",par2);
 
@@ -104,6 +107,25 @@ public class DBHelper extends DBQuery{
 
         }
         }
+
+    public ArrayList<Integer> getClickCount(String table,ArrayList<Integer> idList){
+        ArrayList<Integer> countList = new ArrayList<>();
+        int c =0;
+        for (int id : idList){
+            String[] par = {Integer.toString(id)};
+            ResultSet rs = query("SELECT * FROM "+table+" WHERE id = ? ",par);
+
+            try {
+                rs.next();
+                c = rs.getInt("count");
+                countList.add(c);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return countList;
+    }
 
     public int getClickCount(String table, int id){
         String[] par = {Integer.toString(id)};
@@ -151,29 +173,31 @@ public class DBHelper extends DBQuery{
                             + "(id INT NOT NULL AUTO_INCREMENT,"
                             + "id_"+language+" INT NOT NULL,"
                             + "id_"+name+" INT NOT NULL,"
-                            + "count INT NULL,"
-                            + "prior INT NULL,"
+                            + "count INT NOT NULL,"
+                            + "prior INT NOT NULL,"
                             + "PRIMARY KEY (id));",par);
 
                     queryUpdate("CREATE TABLE rel_"+name+"_"+language+" "
                             + "(id INT NOT NULL AUTO_INCREMENT,"
                             + "id_"+name+" INT NOT NULL,"
                             + "id_"+language+" INT NOT NULL,"
-                            + "count INT NULL,"
-                            + "prior INT NULL,"
+                            + "count INT NOT NULL,"
+                            + "prior INT NOT NULL,"
                             + "PRIMARY KEY (id));",par);
                 }
 
                 queryUpdate("CREATE TABLE wordlist_"+language+" "
                         + "(id INT NOT NULL AUTO_INCREMENT,name VARCHAR(45) NULL,"
                         + "description VARCHAR(45) NULL,"
+                        + "prior INT NOT NULL, "
+                        + "count INT NOT NULL, "
                         + "PRIMARY KEY (id));",par);
                 queryUpdate("CREATE TABLE rel_"+language+"_"+language+" "
                         + "(id INT NOT NULL AUTO_INCREMENT,"
                         + "id_"+language+" INT NOT NULL,"
                         + "id_"+language+"2 INT NOT NULL,"
-                        + "count INT NULL,"
-                        + "prior INT NULL,"
+                        + "count INT NOT NULL,"
+                        + "prior INT NOT NULL,"
                         + "PRIMARY KEY (id));",par);
                 queryUpdate("INSERT INTO languages VALUES (0,'"+language+"' )",par);
             }

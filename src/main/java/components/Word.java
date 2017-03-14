@@ -3,8 +3,10 @@ package components;
 public class Word {
     private String name;
     private int id;
-    private String description="";     //To distinguish homonyms
+    private String description="-";     //To distinguish homonyms
     private String language;
+    private int prior;
+    private int count;
 
     public Word(int id,String name, String language){
         setWord(name);
@@ -19,10 +21,18 @@ public class Word {
         setDescription(description);
     }
 
+    public int getPrior() {
+        return prior;
+    }
+
+    public void setPrior(int prior) {
+        this.prior = prior;
+    }
+
+
     public String getDescription() {
         return description;
     }
-
     public void setDescription(String description) {
         this.description = description;
     }
@@ -46,4 +56,11 @@ public class Word {
     }
 
 
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
 }
