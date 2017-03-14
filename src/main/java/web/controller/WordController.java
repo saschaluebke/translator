@@ -188,7 +188,7 @@ public class WordController {
         translationList.addAll(translator.getTranslationModes());
         modelMap.addAttribute("translationList", translationList);
 
-        
+
         modelMap.addAttribute("to","en");
         modelMap.addAttribute("from","de");
         modelMap.addAttribute("prior",0);
