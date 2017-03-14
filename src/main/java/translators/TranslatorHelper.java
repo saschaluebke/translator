@@ -44,8 +44,9 @@ public class TranslatorHelper {
     }
 
     public String[] tokenizer(String sentence){
-        sentence.replaceAll(".","");
-        sentence.replaceAll("-"," ");
+        sentence = sentence.replace(".","");
+        sentence = sentence.replace("-"," ");
+
         String[] array = sentence.split(" ");
 
         for (int i=0; i<array.length; i++){
@@ -58,12 +59,13 @@ public class TranslatorHelper {
         String translation = "";
         StringBuilder builder = new StringBuilder();
         for(String s : tokens) {
-            builder.append(" ");
             builder.append(s);
+            builder.append(" ");
         }
+        builder.deleteCharAt(builder.length()-1);
         return builder.toString();
     }
-
+//TODO: gibt noch nicht alle Languages weil zu umständlich viele :( Siehe transltr.getLanguages
     public List<Language> getAllLanguages(){
         List<Language> responseList = new ArrayList<>();
         if (transltr!=null){

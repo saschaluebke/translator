@@ -7,7 +7,6 @@ import database.DBHelper;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Saschbot on 11.03.2017.
+ * TODO: Wie Seite Designen vorallem die Ergebnisse. Vielleicht in anderen Dateiformaten zugänglich machen?
  */
 @Controller
 public class WordController {
@@ -165,26 +164,31 @@ public class WordController {
 */
     @RequestMapping("/")
     public String home(ModelMap modelMap) {
+        /*
+        Initialization for Home - page
+         */
         TranslatorHelper translator = new TranslatorHelper();
 
+    //Initialize language Dropdown Menues
         List<Language> languages =  translator.getAllLanguages();
-
         List<Language> languageFrom =  new ArrayList<>();
         languageFrom.add(new Language("de","German"));
         languageFrom.addAll(languages);
         modelMap.addAttribute("languageFrom", languageFrom);
-
         List<Language> languageTo =  new ArrayList<>();
         languageTo.add(new Language("en","English"));
-
-        List<String> translationList = new ArrayList<>();
-        translationList.addAll(translator.getTranslationModes());
-        modelMap.addAttribute("translationList", translationList);
         languageTo.addAll(languages);
         modelMap.addAttribute("languageTo", languageTo);
         List<Language> languagePut = new ArrayList<>();
         languagePut.addAll(languages);
         modelMap.addAttribute("languagePut", languagePut);
+
+        //Inizialize TranslationMode List
+        List<String> translationList = new ArrayList<>();
+        translationList.addAll(translator.getTranslationModes());
+        modelMap.addAttribute("translationList", translationList);
+
+        
         modelMap.addAttribute("to","en");
         modelMap.addAttribute("from","de");
         modelMap.addAttribute("prior",0);
