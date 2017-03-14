@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/translator.iml" filepath="$PROJECT_DIR$/.idea/modules/translator.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/translator_main.iml" filepath="$PROJECT_DIR$/.idea/modules/translator_main.iml" group="giflib" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/translator_test.iml" filepath="$PROJECT_DIR$/.idea/modules/translator_test.iml" group="giflib" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/giflib.iml" filepath="$PROJECT_DIR$/.idea/modules/giflib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/giflib_main.iml" filepath="$PROJECT_DIR$/.idea/modules/giflib_main.iml" group="giflib" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/giflib_test.iml" filepath="$PROJECT_DIR$/.idea/modules/giflib_test.iml" group="giflib" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/translator2.iml" filepath="$PROJECT_DIR$/.idea/translator2.iml" />
     </modules>
   </component>
 </project>

@@ -1,16 +1,15 @@
 package web.controller;
 
 import components.Language;
+import components.Word;
 import database.DBHelper;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import translators.TranslatorHelper;
-import components.Word;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +23,10 @@ public class WordController {
 
 
     @RequestMapping(value="/translated", method=RequestMethod.POST)
-    public String recoverPass(@RequestParam("word") String word,@RequestParam("to") String to,@RequestParam("from") String from,@RequestParam("request") String request,@RequestParam("translation") String translate,final ModelMap modelMap) {
-        //TODO: Hier rein muss die Logik der Übersetzung
-        //TODO: Das ist nur ein provisorium zu Testzwecken
-
-
+    public String recoverPass(@RequestParam("word") String word,@RequestParam("to") String to,@RequestParam("from") String from,
+                              @RequestParam("request") String request,@RequestParam("translation") String translate,@RequestParam("descPut") String descPut,
+                              @RequestParam("wordPut") String wordPut,@RequestParam("fromPut") String fromPut,final ModelMap modelMap) {
+        //TODO: liste anzeigen lassen immer!
         TranslatorHelper translator = new TranslatorHelper();
         List<Language> languages =  translator.getAllLanguages();
 
@@ -74,29 +72,50 @@ public class WordController {
         Word initialWord = new Word(0,word,from);
         Word translatedWord;
         DBHelper dbh = new DBHelper("jdbc:mysql://localhost/translation?useSSL=false","org.gjt.mm.mysql.Driver","root","dsa619");
+        Word putIn = new Word(0,wordPut,fromPut);
+        putIn.setDescription(descPut);
 
-        if (translate.equals("Transltr")){
-            System.out.println("Use transltr");
-            String[] translations = translator.translate(word);
-            String translation = translator.retokenizer(translations);
-            translatedWord = new Word(0,translation,to);
-            //TODO: Was soll passieren wenns schon in der Datenbank ist? und Beschreibung gleich....
-            if (request.equals("cache result")){
-                System.out.println("begin caching");
-                initialWord.setId(dbh.putWordList(initialWord));
-                translatedWord.setId(dbh.putWordList(translatedWord));
-                dbh.putRelation(initialWord,translatedWord);
+        //Which Button was pressed?
+        System.out.println("Request: "+request);
+
+
+        if (request.equals("Put Word")){
+            System.out.println("WordPut initialized");
+            dbh.putWordList(putIn);
+            translatedWord = new Word(0,"-",from);
+        }else if(request.equals("Get Word")) {
+            System.out.println("WordGet initialized");
+            ArrayList<Word> responseList = dbh.getWordList(wordPut,fromPut);
+
+            translatedWord = new Word(0,"-",from);
+        }else {
+            if (translate.equals("Transltr")){
+                System.out.println("Use transltr");
+                String[] translations = translator.translate(word);
+                String translation = translator.retokenizer(translations);
+                translatedWord = new Word(0,translation,to);
+                //TODO: Was soll passieren wenns schon in der Datenbank ist? und Beschreibung gleich....
+                if (request.equals("cache result")){
+                    System.out.println("begin caching");
+                    initialWord.setId(dbh.putWordList(initialWord));
+                    translatedWord.setId(dbh.putWordList(translatedWord));
+                    dbh.putRelation(initialWord,translatedWord);
+                }
+            }else{
+                //TODO aus Datenbank holen bis jetzt nehme immer erste gefundene Übersetzung und Homonym...
+                int initialWordId = dbh.getWordList(word,from).get(0).getId();
+                initialWord.setId(initialWordId);
+                ArrayList<Integer> idList = dbh.getRelation(initialWord,from,to);
+                System.out.println(idList+"/"+initialWord.getId()+"/"+from+":"+to);
+                translatedWord = dbh.getWordList(idList.get(0),to);
             }
-        }else{
-            //TODO aus Datenbank holen bis jetzt nehme immer erste gefundene Übersetzung und Homonym...
-            int initialWordId = dbh.getWordList(word,from).get(0).getId();
-            initialWord.setId(initialWordId);
-            ArrayList<Integer> idList = dbh.getRelation(initialWord,from,to);
-            System.out.println(idList+"/"+initialWord.getId()+"/"+from+":"+to);
-            translatedWord = dbh.getWordList(idList.get(0),to);
         }
 
-        modelMap.addAttribute("word",translatedWord);
+           modelMap.addAttribute("word",translatedWord);
+
+
+
+
         return "home";
     }
 

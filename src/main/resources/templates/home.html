@@ -3,19 +3,55 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Translator</title>
+    <script type="text/javascript">
+    //alert("Hallo");
+    //TODO: failed Attempt to toggle buttton
+        var clickBtn = document.getElementById("cacheButton");
+var button = document.getElementsByClassName('btn')[0];
+
+// Disable the button on initial page load
+button.disabled = true;
+
+//add event listener
+clickBtn.addEventListener('click', function(event) {
+alert("Blub");
+    button.disabled = !button.disabled;
+    alert("hallo");
+});
+
+    </script>
+
+<style>
+     nav > ul > li {
+	position: relative;
+	display: inline-block;
+	width: 100px;
+      }
+
+      ul {
+  list-style-type: none;
+   padding-left:0;
+}
+</style>
+
+
 
 </head>
 
 <body>
 <form name="forgotpassord" action="translated" method="POST" >
+
     <div id="inputDiv">
-        <h3>Put new Word in List </h3><h6>Result</h6>
-        <select class="form-control" name="from" >
+        <h3>Put new Word in List or Get a Word from a languages via his name and/or Description</h3>
+
+        <h6 th:text="${result}" ></h6>
+        <select class="form-control" name="fromPut" >
             <option th:each="language : ${languageFrom}" th:value="${language.name}" th:text="${language.fullName}"></option>
         </select>
         <label>Word:</label> <input type='text' name='wordPut' value=""/>
         <label>Description:</label> <input type='text' name='descPut' value=""/>
         <input type="submit" value="Put Word" class="btn" name="request"/>
+        <input type="submit" value="Get Word" class="btn" name="request"/>
     </div>
     <div id="translationDiv">
         <h3>Translate a Word</h3>
@@ -34,10 +70,34 @@
     </div>
     <div id = "resultDiv">
         <h4>Translation Result</h4>
+        <!--<ul >
+            <li th:each="result : $(results)" th:text="${result}" ></li>
+        </ul>-->
         <h1  th:text = "${word.name}"></h1>
         <h1 th:text = "${word.description}"></h1>
-        <input type='submit' class="btn" name='request' value="cache result"/>
+        <input id='cacheButton' type='submit' class="btn" name='request' value="cache result"/>
+        <nav>
+            <ul style="font-weight: bold;" >
+                <li>Name
+                    <ul class = "menu" style="font-weight: normal;">
+                        <li><a href="#">Sub 1.1</a></li>
+                        <li><a href="blub">SSub 1.</a></li>
+                        <li>Sub 1.3</li>
+                        <li>Sub 1.4</li>
+                    </ul>
+                </li>
+                <li>Description
+                    <ul style="font-weight: normal;">
+                        <li><a href="boings"  >Sub 2.1</a></li>
+                        <li>Sub 2.2</li>
+                        <li>Sub 2.3</li>
+                        <li>Sub 2.4</li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
     </div>
+
     </form>
 </body>
 </html>
