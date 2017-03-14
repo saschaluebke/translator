@@ -1,10 +1,13 @@
 package database;
 
+import components.Relation;
 import components.Word;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class DBHelper extends DBQuery{
     private DBQuery dbq;
@@ -23,7 +26,9 @@ public class DBHelper extends DBQuery{
     }
 
     public Word getWordList(int id, String language){
-
+        int count=0;
+        int prior = 0;
+        String description="-";
         ResultSet rs =null;
         String name = "";
         String[] par = {Integer.toString(id)};
@@ -33,11 +38,17 @@ public class DBHelper extends DBQuery{
             if (rs.next() == true){
                 id=rs.getInt("id");
                 name = rs.getString("name");
+                prior = rs.getInt("prior");
+                count = rs.getInt("count");
+                description = rs.getString("description");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         Word responseWord = new Word(id,name,language);
+        responseWord.setPrior(prior);
+        responseWord.setCount(count);
+        responseWord.setDescription(description);
         return responseWord;
     }
 
@@ -46,6 +57,9 @@ public class DBHelper extends DBQuery{
 
         ResultSet rs = null;
         String[] par = {name};
+
+        //System.out.println("SELECT * FROM wordlist_" + language + " WHERE name = "+name);
+
         rs = query("SELECT * FROM wordlist_" + language + " WHERE name = ? ", par);
 
         try {
@@ -54,6 +68,9 @@ public class DBHelper extends DBQuery{
                 name = rs.getString("name");
                 Word flotsam = new Word(id, name, language);
                 flotsam.setDescription(rs.getString("description"));
+                if (flotsam.getDescription().equals("")){
+                    flotsam.setDescription("-");
+                }
                 flotsam.setPrior(rs.getInt("prior"));
                 flotsam.setCount(rs.getInt("count"));
                 wordList.add(flotsam);
@@ -61,6 +78,7 @@ public class DBHelper extends DBQuery{
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return wordList;
     }
 
@@ -81,29 +99,39 @@ public class DBHelper extends DBQuery{
         return id;
     }
 
-    public ArrayList<Integer> getRelation(Word word, String from, String to){
-        ArrayList<Integer> resultList = new ArrayList<>();
+    public ArrayList<Relation> getRelation(Word word, String from, String to){
+        ArrayList<Relation> relationList = new ArrayList<>();
         String[] par = {Integer.toString(word.getId())};
-        ResultSet tmpRs = query("SELECT * FROM rel_"+from+"_"+to+" WHERE id_"+from+" = ? ", par);
+        ResultSet rs = query("SELECT * FROM rel_"+from+"_"+to+" WHERE id_"+from+" = ? ", par);
         try {
-            while(tmpRs.next()){
-
-                resultList.add(tmpRs.getInt("id_"+to));
+            while(rs.next()){
+                int id = rs.getInt("id");
+                int idFrom = rs.getInt("id_"+from);
+                int idTo = rs.getInt("id_"+to);
+                Relation relation = new Relation(id,idFrom,idTo);
+                relation.setCount(rs.getInt("count"));
+                relation.setPrior(rs.getInt("prior"));
+                relationList.add(relation);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        if (relationList.size()>1){
+            relationList.sort((relation1, relation2) -> relation1.compareTo(relation2));
+        }
 
-        return resultList;
+        return relationList;
     }
 
-    public void putRelation(Word word1, Word word2){
+    public void putRelation(Word word1, Word word2, int prior, int count){
+        //enter Synonym
         if (word1.getLanguage().equals(word2.getLanguage())){
-            String[] par1 ={Integer.toString(word1.getId()),Integer.toString(word2.getId())};
-            queryUpdate("INSERT INTO rel_"+word1.getLanguage()+"_"+word2.getLanguage()+" VALUES (0, ?, ? , 0 ,0)",par1);
-        }else{
-            String[] par1 ={Integer.toString(word1.getId()),Integer.toString(word2.getId())};
-            queryUpdate("INSERT INTO rel_"+word1.getLanguage()+"_"+word2.getLanguage()+" VALUES (0, ?, ? , 0 ,0)",par1);
+            String[] par1 ={Integer.toString(word1.getId()),Integer.toString(word2.getId()),Integer.toString(prior),Integer.toString(count)};
+            queryUpdate("INSERT INTO rel_"+word1.getLanguage()+"_"+word2.getLanguage()+" VALUES (0, ?, ? , ? ,?)",par1);
+        }else //enter translation
+            {
+            String[] par1 ={Integer.toString(word1.getId()),Integer.toString(word2.getId()),Integer.toString(prior),Integer.toString(count)};
+            queryUpdate("INSERT INTO rel_"+word1.getLanguage()+"_"+word2.getLanguage()+" VALUES (0, ?, ? , ? ,?)",par1);
 
         }
         }
@@ -173,16 +201,16 @@ public class DBHelper extends DBQuery{
                             + "(id INT NOT NULL AUTO_INCREMENT,"
                             + "id_"+language+" INT NOT NULL,"
                             + "id_"+name+" INT NOT NULL,"
-                            + "count INT NOT NULL,"
                             + "prior INT NOT NULL,"
+                            + "count INT NOT NULL,"
                             + "PRIMARY KEY (id));",par);
 
                     queryUpdate("CREATE TABLE rel_"+name+"_"+language+" "
                             + "(id INT NOT NULL AUTO_INCREMENT,"
                             + "id_"+name+" INT NOT NULL,"
                             + "id_"+language+" INT NOT NULL,"
-                            + "count INT NOT NULL,"
                             + "prior INT NOT NULL,"
+                            + "count INT NOT NULL,"
                             + "PRIMARY KEY (id));",par);
                 }
 
@@ -196,8 +224,8 @@ public class DBHelper extends DBQuery{
                         + "(id INT NOT NULL AUTO_INCREMENT,"
                         + "id_"+language+" INT NOT NULL,"
                         + "id_"+language+"2 INT NOT NULL,"
-                        + "count INT NOT NULL,"
                         + "prior INT NOT NULL,"
+                        + "count INT NOT NULL,"
                         + "PRIMARY KEY (id));",par);
                 queryUpdate("INSERT INTO languages VALUES (0,'"+language+"' )",par);
             }

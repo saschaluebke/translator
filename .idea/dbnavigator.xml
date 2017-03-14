@@ -59,7 +59,7 @@
           <description value="" />
           <database-type value="MYSQL" />
           <config-type value="BASIC" />
-          <database-version value="5.7" />
+          <database-version value="5.1" />
           <driver-source value="BUILTIN" />
           <driver-library value="" />
           <driver value="" />

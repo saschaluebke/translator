@@ -1,11 +1,13 @@
 package web.controller;
 
 import components.Language;
+import components.Relation;
 import components.Word;
 import database.DBHelper;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,6 +15,7 @@ import translators.TranslatorHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Saschbot on 11.03.2017.
@@ -23,10 +26,13 @@ public class WordController {
 
 
     @RequestMapping(value="/translated", method=RequestMethod.POST)
-    public String recoverPass(@RequestParam("word") String word,@RequestParam("to") String to,@RequestParam("from") String from,
-                              @RequestParam("request") String request,@RequestParam("translation") String translate,@RequestParam("descPut") String descPut,
-                              @RequestParam("wordPut") String wordPut,@RequestParam("fromPut") String fromPut,final ModelMap modelMap) {
-        //TODO: liste anzeigen lassen immer!
+    public String recoverPass(@RequestParam Map<String, String> params, @RequestParam("word") String word, @RequestParam("to") String to, @RequestParam("from") String from,
+                              @RequestParam("request") String request, @RequestParam("translation") String translate, @RequestParam("descPut") String descPut,
+                              @RequestParam("wordPut") String wordPut, @RequestParam("fromPut") String fromPut, @RequestParam("prior") int prior,
+                              @RequestParam("newDescPut")String newDescPut, final ModelMap modelMap) {
+
+        //System.out.println(params.toString());
+        DBHelper dbh = new DBHelper("jdbc:mysql://localhost/translation?useSSL=false","org.gjt.mm.mysql.Driver","root","dsa619");
         TranslatorHelper translator = new TranslatorHelper();
         translator.setFrom(from);
         translator.setTo(to);
@@ -51,6 +57,16 @@ public class WordController {
         languageTo.addAll(languages);
         modelMap.addAttribute("languageTo", languageTo);
 
+        List<Language> languagePut =  new ArrayList<>();
+        for (int i = 0;i<languages.size();i++){
+            if (languages.get(i).getName().equals(fromPut)){
+                languagePut.add(languages.get(i));
+            }
+        }
+        languagePut.addAll(languages);
+        modelMap.addAttribute("languagePut", languagePut);
+
+
         //Create translationModeList
         List<String> translationModes = new ArrayList<>();
         translationModes.addAll(translator.getTranslationModes());
@@ -63,62 +79,74 @@ public class WordController {
         translationList.addAll(translationModes);
 
         //execute Actions
-        System.out.println("Translate: "+translate);
         Word selectedWord = new Word (0,"!No Word found!","en");
         ArrayList<Word> wordList = new ArrayList<>();
         Word initialWord = new Word(0,word,from);
-        DBHelper dbh = new DBHelper("jdbc:mysql://localhost/translation?useSSL=false","org.gjt.mm.mysql.Driver","root","dsa619");
         Word putIn = new Word(0,wordPut,fromPut);
         putIn.setDescription(descPut);
-        System.out.println("Request: "+request);
+        //if (request.equals("cache list")){
 
-        if (request.equals("Put Word")){
-            System.out.println("WordPut initialized");
+            //TODO Prior nachträglich verändern... übersetzungsliste verändern...
+
+       // }
+         if (request.equals("Put Word")){
             putIn.setId(dbh.putWordList(putIn));
             selectedWord = putIn;
         }else if(request.equals("Get Word")) {
-            System.out.println("WordGet initialized");
-            wordList = dbh.getWordList(wordPut,fromPut);
+            wordList = dbh.getWordList(putIn.getName(),fromPut);
+
             if (wordList.size()>0){
                 selectedWord = wordList.get(0);
             }else{
                 selectedWord = new Word(0,"!No Word found!","en");
             }
-
         }else {
             if (translate.equals("Transltr")){
-                System.out.println("Use transltr");
                 String[] translations = translator.translate(word);
                 String translation = translator.retokenizer(translations);
                 selectedWord = new Word(0,translation,to);
                 wordList.add(selectedWord);
-                //TODO: Was soll passieren wenns schon in der Datenbank ist? und Beschreibung gleich....
+                //TODO: Was soll passieren wenn das Wort schon in der Datenbank ist? und Beschreibung gleich....
+                //TODO: Was passiert mit dem initial Wort (Problem wenn es das noch nicht gibt...) Neues Fenster?
                 if (request.equals("cache result")){
-                    System.out.println("begin caching");
-                    initialWord.setId(dbh.putWordList(initialWord));
+                     initialWord.setId(dbh.putWordList(initialWord));
+                    selectedWord.setPrior(prior);
+                    selectedWord.setDescription(newDescPut);
                     selectedWord.setId(dbh.putWordList(selectedWord));
-                    dbh.putRelation(initialWord,selectedWord);
+                    dbh.putRelation(initialWord,selectedWord,prior,0);
+                    //TODO auch die andere Relation und welche prior da?
                 }
             }else{
-                //TODO: Aus Datenbank aber bis jetzt nehme immer erste gefundene Übersetzung und Homonym...
-                int initialWordId = dbh.getWordList(word,from).get(0).getId();
-                initialWord.setId(initialWordId);
-                ArrayList<Integer> idList = dbh.getRelation(initialWord,from,to);
+                if (request.equals("cache result")){
+                    selectedWord = new Word(0,"!Only After Translation Request!","en");
 
-                if (idList.size()>0){
-                    System.out.println("keine übersetzung gefunden");
                 }else{
-                    System.out.println(idList+"/"+initialWord.getId()+"/"+from+":"+to);
-                    selectedWord = dbh.getWordList(idList.get(0),to);
-                    for(int i:idList){
-                        wordList.add(dbh.getWordList(idList.get(i),to));
+                    //TODO: was ist wenn es viele Homonyme gibt? -> Auch nach Description sehen.
+                    //TODO: Was soll wie sortiert werden?
+                    ArrayList<Word> allWords =  dbh.getWordList(word,from);
+
+
+                    ArrayList<Relation> relationList = new ArrayList<>();
+                    for(Word w : allWords){
+                         relationList.addAll(dbh.getRelation(w,from,to));
+                    }
+                    relationList.sort((relation1, relation2) -> relation1.compareTo(relation2));
+                    if (relationList.size()<1){
+                        //No translation found
+                    }else{
+                        selectedWord = dbh.getWordList(relationList.get(0).getIdFrom(),to);
+                        for(Relation r:relationList){
+                            wordList.add(dbh.getWordList(r.getIdTo(),to));
+                        }
                     }
                 }
+
             }
+
         }
 
         modelMap.addAttribute("translationList", translationList);
-        modelMap.addAttribute("initialWord",word);
+        modelMap.addAttribute("initialWord",initialWord);
         modelMap.addAttribute("to",to);
         modelMap.addAttribute("from",from);
         modelMap.addAttribute("word",selectedWord);
@@ -154,10 +182,15 @@ public class WordController {
         modelMap.addAttribute("translationList", translationList);
         languageTo.addAll(languages);
         modelMap.addAttribute("languageTo", languageTo);
+        List<Language> languagePut = new ArrayList<>();
+        languagePut.addAll(languages);
+        modelMap.addAttribute("languagePut", languagePut);
         modelMap.addAttribute("to","en");
         modelMap.addAttribute("from","de");
+        modelMap.addAttribute("prior",0);
         Word w = new Word(0,"-","en");
         modelMap.addAttribute("word",w);
+        modelMap.addAttribute("initialWord",w);
         ArrayList<Word> wordList = new ArrayList<>();
         wordList.add(w);
         modelMap.addAttribute("wordList",wordList);

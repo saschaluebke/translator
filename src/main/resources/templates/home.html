@@ -46,12 +46,26 @@ alert("Blub");
 
         <h6 th:text="${result}" ></h6>
         <select class="form-control" name="fromPut" >
-            <option th:each="language : ${languageFrom}" th:value="${language.name}" th:text="${language.fullName}"></option>
+            <option th:each="language : ${languagePut}" th:value="${language.name}" th:text="${language.fullName}"></option>
         </select>
         <label>Word:</label> <input type='text' name='wordPut' value=""/>
         <label>Description:</label> <input type='text' name='descPut' value=""/>
         <input type="submit" value="Put Word" class="btn" name="request"/>
         <input type="submit" value="Get Word" class="btn" name="request"/>
+        <nav>
+            <ul style="font-weight: bold;" >
+                <li>Translated
+                    <ul class = "menu" style="font-weight: normal;">
+                        <li th:each="word : ${wordList}" ><a th:text="${word.name}" th:href="'word/'+${word.language}+${word.name}" ></a></li>
+                    </ul>
+                </li>
+                <li>Description
+                    <ul class = "menu" style="font-weight: normal;">
+                        <li th:each="word : ${wordList}" ><a th:text="${word.description}"></a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
     </div>
     <div id="translationDiv">
         <h3>Translate a Word</h3>
@@ -65,18 +79,26 @@ alert("Blub");
             <option th:each="language : ${languageTo}" th:value="${language.name}" th:text="${language.fullName}"></option>
         </select>
 
-        <label>Word:</label> <input type='text' name='word' th:value="${initialWord}"/>
+        <label>Word:</label> <input type='text' name='word' th:value="${initialWord.name}"/>
         <label>&nbsp;</label> <input type="submit" value="OK" class="btn" name="request"/>
     </div>
     <div id = "resultDiv">
         <h4>Result: </h4>
         <h1  th:text = "${word.name}"></h1>
         <h1 th:text = "${word.description}"></h1>
+        <label>New Description:</label> <input type='text' name='newDescPut' th:value="${word.description}"/>
+        <label>Prior:</label> <input type="number" name="prior" th:value="${initialWord.prior}"/>
+        <input id='cacheButton' type='submit' class="btn" name='request' value="cache result"/>
         <nav>
             <ul style="font-weight: bold;" >
                 <li>Name
                     <ul class = "menu" style="font-weight: normal;">
-                        <li th:each="word : ${wordList}" ><a th:text="${word.name}" th:href="${word.name}"></a></li>
+                        <li th:each="word : ${wordList}" ><a th:text="${initialWord.name}" ></a></li>
+                    </ul>
+                </li>
+                <li>Translated
+                    <ul class = "menu" style="font-weight: normal;">
+                        <li th:each="word : ${wordList}" ><a th:text="${word.name}" th:href="'word/'+${word.language}+${word.name}" ></a></li>
                     </ul>
                 </li>
                 <li>Description
@@ -86,7 +108,8 @@ alert("Blub");
                 </li>
                 <li>Prior
                     <ul class = "menu" style="font-weight: normal;">
-                        <li th:each="word : ${wordList}" ><a th:text="${word.prior}"></a></li>
+
+                        <li th:each="word : ${wordList}" ><a  th:text="${word.prior}" ></a> </li>
                     </ul>
                 </li>
                 <li>Count
@@ -96,8 +119,8 @@ alert("Blub");
                 </li>
             </ul>
         </nav>
-
-        <input id='cacheButton' type='submit' class="btn" name='request' value="cache result"/>
+       <!-- <input id='cacheListButton' type='submit' class="btn" name='request' value="cache list"/>
+-->
     </div>
 
     </form>

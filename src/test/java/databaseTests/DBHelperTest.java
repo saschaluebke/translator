@@ -46,7 +46,7 @@ public class DBHelperTest {
     }
 
     @Test
-    public void searchWordListByName() {
+    public void searchWordListTestByName() {
         dbh.newLanguage("en");
         dbh.newLanguage("de");
 
@@ -56,7 +56,7 @@ public class DBHelperTest {
     }
 
     @Test
-    public void getWordListByNameMulti() {
+    public void getWordListTestByNameMulti() {
         dbh.newLanguage("en");
         dbh.newLanguage("de");
 
@@ -69,10 +69,11 @@ public class DBHelperTest {
         dbh.putWordList(wordGerman2);
         assertEquals("Bank",dbh.getWordList("Bank","de").get(0).getName());
         assertEquals("Bank",dbh.getWordList("Bank","de").get(1).getName());
+        assertEquals("Das ist eine Beschreibung",dbh.getWordList("Bank","de").get(1).getDescription());
     }
 
     @Test
-    public void searchWordListById() {
+    public void searchWordListTestById() {
         dbh.newLanguage("en");
         dbh.newLanguage("de");
 
@@ -84,7 +85,7 @@ public class DBHelperTest {
 
 
     @Test
-    public void getRelationSingle() {
+    public void getRelationTestSingle() {
         dbh.newLanguage("en");
         dbh.newLanguage("de");
 
@@ -92,13 +93,13 @@ public class DBHelperTest {
         Word wordEnglish = new Word(0,"Hello", "en");
         wordGerman.setId(dbh.putWordList(wordGerman));
         wordEnglish.setId(dbh.putWordList(wordEnglish));
-        dbh.putRelation(wordGerman,wordEnglish);
+        dbh.putRelation(wordGerman,wordEnglish,0,0);
 
-        assertEquals(1,(int)dbh.getRelation(wordGerman,"de","en").get(0));
+        assertEquals(1,(int)dbh.getRelation(wordGerman,"de","en").get(0).getIdFrom());
     }
 
     @Test
-    public void getRelationMultiple() {
+    public void getRelationTestMultiple() {
         dbh.newLanguage("en");
         dbh.newLanguage("de");
 
@@ -108,11 +109,29 @@ public class DBHelperTest {
         wordGerman.setId(dbh.putWordList(wordGerman));
         wordEnglish1.setId(dbh.putWordList(wordEnglish1));
         wordEnglish2.setId(dbh.putWordList(wordEnglish2));
-        dbh.putRelation(wordGerman,wordEnglish1);
-        dbh.putRelation(wordGerman,wordEnglish2);
+        dbh.putRelation(wordGerman,wordEnglish1,0,0);
+        dbh.putRelation(wordGerman,wordEnglish2,0,0);
 
-        assertEquals(1,(int)dbh.getRelation(wordGerman,"de","en").get(0));
-        assertEquals(2,(int)dbh.getRelation(wordGerman,"de","en").get(1));
+        assertEquals(1,(int)dbh.getRelation(wordGerman,"de","en").get(0).getIdTo());
+        assertEquals(2,(int)dbh.getRelation(wordGerman,"de","en").get(1).getIdTo());
+    }
+
+    @Test
+    public void getRelationTestSort() {
+        dbh.newLanguage("en");
+        dbh.newLanguage("de");
+
+        Word wordGerman = new Word(0,"Hallo","de");
+        Word wordEnglish1 = new Word(0,"Hello", "en");
+        Word wordEnglish2 = new Word(0,"Hi","en");
+        wordGerman.setId(dbh.putWordList(wordGerman));
+        wordEnglish1.setId(dbh.putWordList(wordEnglish1));
+        wordEnglish2.setId(dbh.putWordList(wordEnglish2));
+        dbh.putRelation(wordGerman,wordEnglish1,0,0);
+        dbh.putRelation(wordGerman,wordEnglish2,10,0);
+
+        assertEquals(2,(int)dbh.getRelation(wordGerman,"de","en").get(0).getIdTo());
+        assertEquals(1,(int)dbh.getRelation(wordGerman,"de","en").get(1).getIdTo());
     }
 
 

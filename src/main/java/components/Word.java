@@ -5,8 +5,8 @@ public class Word {
     private int id;
     private String description="-";     //To distinguish homonyms
     private String language;
-    private int prior;
-    private int count;
+    private int prior=0;
+    private int count=0;
 
     public Word(int id,String name, String language){
         setWord(name);
