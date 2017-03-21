@@ -31,7 +31,7 @@ public class WordController {
                               @RequestParam("newDescPut")String newDescPut, final ModelMap modelMap) {
 
         //System.out.println(params.toString());
-        DBHelper dbh = new DBHelper("jdbc:mysql://localhost/translation?useSSL=false","org.gjt.mm.mysql.Driver","root","dsa619");
+        DBHelper dbh = new DBHelper();
         TranslatorHelper translator = new TranslatorHelper();
         translator.setFrom(from);
         translator.setTo(to);

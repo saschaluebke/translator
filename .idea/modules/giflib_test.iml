@@ -12,6 +12,7 @@
     <orderEntry type="module" module-name="giflib_main" />
     <orderEntry type="library" name="Gradle: mysql:mysql-connector-java:5.1.6" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-thymeleaf:1.2.6.RELEASE" level="project" />
+    <orderEntry type="library" name="Gradle: edu.mit:jwi:2.2.3" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter:1.2.6.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-web:1.2.6.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework:spring-core:4.1.7.RELEASE" level="project" />

@@ -1,5 +1,6 @@
 package database;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,6 +26,18 @@ public class DBQuery {
         this.myDriver = myDriver;
         this.conName = conName;
         this.password = password;
+    }
+
+    public DBQuery(){
+        TranslatorGetProperties tgp = new TranslatorGetProperties();
+        try {
+            this.url = tgp.getPropValues("database.url");
+            this.myDriver = tgp.getPropValues("database.driver");
+            this.conName = tgp.getPropValues("database.user");
+            this.password = tgp.getPropValues("database.password");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private Connection establishConnection(){
@@ -78,6 +91,36 @@ public class DBQuery {
                 pstmt.setString(count, par);
             }
             lines = pstmt.executeUpdate();
+
+            conn.close();
+        }
+        catch (Exception e)
+        {
+            System.err.println("Got an exception!");
+            System.err.println(e.getMessage());
+        }
+        return lines;
+    }
+
+    protected int queryUpdateAll(ArrayList<String> query, ArrayList<String[]> parameters){
+        int lines = -1;
+        try
+        {
+           int c=0;
+            Connection conn = establishConnection();
+            for(String s : query){
+                String[] parList = parameters.get(c);
+                c++;
+
+                PreparedStatement pstmt = conn.prepareStatement(s);
+                int count = 0;
+                for(String par:parList){
+                    count++;
+                    pstmt.setString(count, par);
+                }
+                    lines = pstmt.executeUpdate();
+
+            }
 
             conn.close();
         }

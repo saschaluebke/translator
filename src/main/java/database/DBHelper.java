@@ -6,14 +6,12 @@ import components.Word;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 public class DBHelper extends DBQuery{
     private DBQuery dbq;
 
-    public DBHelper(String url, String myDriver, String conName, String password) {
-        super(url, myDriver, conName, password);
+    public DBHelper() {
+        super();
         //find "languages"table, If there is no languages make one
         if (!isTable("languages")){
             queryUpdate("CREATE TABLE languages"
@@ -98,6 +96,26 @@ public class DBHelper extends DBQuery{
         }
         return id;
     }
+
+    public void putWordListAll(ArrayList<Word> wordList){
+        ArrayList<String> querries = new ArrayList<>();
+        ArrayList<String[]> parameters = new ArrayList<>();
+        int count=0;
+            for(Word w : wordList){
+
+                String querry = "INSERT INTO wordlist_"+"en"+" VALUES (0, ?, 0, 0, 0)";
+                String[] par ={w.getName()};
+                querries.add(querry);
+                parameters.add(par);
+                count++;
+                if (count > 100) {
+                    count = 0;
+                }
+            }
+
+        queryUpdateAll(querries,parameters);
+        }
+
 
     public ArrayList<Relation> getRelation(Word word, String from, String to){
         ArrayList<Relation> relationList = new ArrayList<>();
@@ -215,8 +233,8 @@ public class DBHelper extends DBQuery{
                 }
 
                 queryUpdate("CREATE TABLE wordlist_"+language+" "
-                        + "(id INT NOT NULL AUTO_INCREMENT,name VARCHAR(45) NULL,"
-                        + "description VARCHAR(45) NULL,"
+                        + "(id INT NOT NULL AUTO_INCREMENT,name VARCHAR(100) NULL,"
+                        + "description VARCHAR(100) NULL,"
                         + "prior INT NOT NULL, "
                         + "count INT NOT NULL, "
                         + "PRIMARY KEY (id));",par);

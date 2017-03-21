@@ -13,7 +13,7 @@ public class DBHelperTest {
 
     @BeforeClass
     public static void onceExecutedBeforeAll() {
-        dbh = new DBHelper("jdbc:mysql://localhost/translation?useSSL=false","org.gjt.mm.mysql.Driver","root","dsa619");
+        dbh = new DBHelper();
         dbh.dropAllTables();
         dbh.truncate("languages");
     }
@@ -21,7 +21,7 @@ public class DBHelperTest {
     @Before
     public void executedBeforeEach() {
         dbh.dropAllTables();
-        dbh = new DBHelper("jdbc:mysql://localhost/translation?useSSL=false","org.gjt.mm.mysql.Driver","root","dsa619");
+        dbh = new DBHelper();
         dbh.truncate("languages");
     }
 
