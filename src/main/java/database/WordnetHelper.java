@@ -1,12 +1,6 @@
 package database;
 
 import components.Word;
-import edu.mit.jwi.Dictionary;
-import edu.mit.jwi.IDictionary;
-import edu.mit.jwi.IRAMDictionary;
-import edu.mit.jwi.RAMDictionary;
-import edu.mit.jwi.data.ILoadPolicy;
-import edu.mit.jwi.item.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,12 +15,13 @@ import java.util.List;
  *
  */
 public class WordnetHelper {
-
+/*
     private String path;
-    private IDictionary dict;
+    //private IDictionary dict;
     private File wnDir;
 
     public WordnetHelper(){
+
         String wnhome = System.getProperty("user.dir");
         path = wnhome + File.separator + "dict";
         URL url = null;
@@ -142,4 +137,5 @@ public class WordnetHelper {
     public IDictionary getDictionary(){
         return dict;
     }
+    */
 }

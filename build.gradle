@@ -22,6 +22,10 @@ dependencies {
     compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
     compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
     compile group: 'edu.mit', name: 'jwi', version: '2.2.3'
+    // https://mvnrepository.com/artifact/org.json/json
+    compile group: 'org.json', name: 'json', version: '20090211'
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+    compile group: 'org.jdom', name: 'jdom', version: '2.0.0'
     testCompile 'junit:junit:4.12'
 }
 

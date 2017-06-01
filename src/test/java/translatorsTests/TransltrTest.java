@@ -22,7 +22,7 @@ public class TransltrTest {
         String translation = transltr.translate("dog");
         assertEquals("Hund",translation);
     }
-/*TODO: Mag er manchmal! nicht am besten auf Translation Errors besser gefasst sein (nochmal probieren)
+/*TODO: Besser auf unterschiedliche outcomes reagieren...
     @Test
     public void multiTranslationTest() {
         String translation = transltr.translate("dog cat");
