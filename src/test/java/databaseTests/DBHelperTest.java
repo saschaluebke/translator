@@ -79,7 +79,7 @@ public class DBHelperTest {
 
         dbh.putWordList(new Word(0,"Hallo","de"));
 
-        assertEquals(1,dbh.getWordList(1,"de").getId());
+        assertEquals(1,dbh.getWordFromId(1,"de").getId());
     }
 
 

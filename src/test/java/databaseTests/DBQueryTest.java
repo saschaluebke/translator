@@ -13,7 +13,7 @@ public class DBQueryTest {
 
     @BeforeClass
     public static void onceExecutedBeforeAll() {
-        dbq = new DBQuery("jdbc:mysql://localhost/translation","org.gjt.mm.mysql.Driver","root","dsa");
+        dbq = new DBQuery();
         dbq.dropAllTables();
         dbq.truncate("languages");
     }

@@ -1,5 +1,6 @@
 package database;
 
+import components.MatchResult;
 import components.Relation;
 import components.Word;
 
@@ -23,7 +24,7 @@ public class DBHelper extends DBQuery{
 
     }
 
-    public Word getWordList(int id, String language){
+    public Word getWordFromId(int id, String language){
         int count=0;
         int prior = 0;
         String description="-";
@@ -50,6 +51,8 @@ public class DBHelper extends DBQuery{
         return responseWord;
     }
 
+
+
     public ArrayList<Word>  getWordList(String name, String language) {
         ArrayList<Word> wordList = new ArrayList<>();
 
@@ -62,6 +65,32 @@ public class DBHelper extends DBQuery{
 
         try {
             while (rs.next() == true) {
+                int id = rs.getInt("id");
+                name = rs.getString("name");
+                Word flotsam = new Word(id, name, language);
+                flotsam.setDescription(rs.getString("description"));
+                if (flotsam.getDescription().equals("")){
+                    flotsam.setDescription("-");
+                }
+                flotsam.setPrior(rs.getInt("prior"));
+                flotsam.setCount(rs.getInt("count"));
+                wordList.add(flotsam);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return wordList;
+    }
+
+    public ArrayList<Word> getAllWords(String language){
+        ArrayList<Word> wordList = new ArrayList<>();
+        ResultSet rs = null;
+        String[] par = new String[0];
+        rs = query("SELECT * FROM wordlist_" + language ,par);
+        try {
+            while (rs.next() == true) {
+                String name;
                 int id = rs.getInt("id");
                 name = rs.getString("name");
                 Word flotsam = new Word(id, name, language);

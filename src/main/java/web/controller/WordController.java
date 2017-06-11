@@ -133,9 +133,9 @@ public class WordController {
                     if (relationList.size()<1){
                         //No translation found
                     }else{
-                        selectedWord = dbh.getWordList(relationList.get(0).getIdFrom(),to);
+                        selectedWord = dbh.getWordFromId(relationList.get(0).getIdFrom(),to);
                         for(Relation r:relationList){
-                            wordList.add(dbh.getWordList(r.getIdTo(),to));
+                            wordList.add(dbh.getWordFromId(r.getIdTo(),to));
                         }
                     }
                 }

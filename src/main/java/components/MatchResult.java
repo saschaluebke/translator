@@ -5,17 +5,27 @@ package components;
  */
 public class MatchResult implements Comparable<MatchResult> {
     private int score, sourceStart, sourceEnd, targetStart, targetEnd;
-    private final String sourceText, targetText;
+    private final String dbString, searchString;
 
     public MatchResult(String sourceText, String targetText, int score,int sourceStart,int sourceEnd, int targetStart, int targetEnd){
-        this.sourceText = sourceText;
-        this.targetText = targetText;
+        this.dbString = sourceText;
+        this.searchString = targetText;
         this.score=score;
         this.sourceStart=sourceStart;
         this.sourceEnd=sourceEnd;
         this.targetStart = targetStart;
         this.targetEnd = targetEnd;
     }
+
+    public String getDbString(){
+        return dbString.substring(sourceStart,sourceEnd);
+    }
+
+    public String getSearchString(){
+        return searchString.substring(targetStart,targetEnd);
+    }
+
+
 
     public int getScore() {
         return score;
@@ -57,6 +67,10 @@ public class MatchResult implements Comparable<MatchResult> {
         this.targetEnd = targetEnd;
     }
 
+    public int getTargetSize(){
+        return targetEnd-targetStart;
+    }
+
     @Override
     public int compareTo(MatchResult other) {
         return (this.getSourceEnd()-this.getSourceStart()+this.getTargetEnd()-this.getTargetStart())
@@ -65,7 +79,6 @@ public class MatchResult implements Comparable<MatchResult> {
 
     @Override
     public String toString(){
-        int compareScore = this.getSourceEnd()-this.getSourceStart()+this.getTargetEnd()-this.getTargetStart();
-        return this.targetText.substring(targetStart,targetEnd)+" "+this.sourceText.substring(sourceStart,sourceEnd)+":"+compareScore;
+        return this.searchString.substring(targetStart,targetEnd)+" "+this.dbString.substring(sourceStart,sourceEnd)+":"+score;
     }
 }
